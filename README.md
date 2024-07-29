@@ -18,8 +18,8 @@ Our evaluation consists of two steps: generation and metrics calculation.
 
 ### Generation
 
-#### Open-sourced Models
-For open-sourced models like StarCoder, DeepSeek-Coder, etc., we recommended using [vLLM](https://github.com/vllm-project/vllm) for fast and distributed inference on CrossCodeEval. 
+#### Publicly Available Models
+For publicly available models like StarCoder, DeepSeek-Coder, etc., we recommended using [vLLM](https://github.com/vllm-project/vllm) for fast and distributed inference on CrossCodeEval. 
 
 ```bash
 export gpus=2
