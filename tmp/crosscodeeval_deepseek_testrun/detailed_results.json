@@ -1,0 +1,2 @@
+{"task_id": "project_cc_typescript/25", "em": 0, "es": 45.0, "id_em": 0, "id_precision": 0.6, "id_recall": 0.5, "id_f1": 0.5454545454545454}
+{"task_id": "project_cc_typescript/115", "em": 0, "es": 97.0, "id_em": 1, "id_precision": 1.0, "id_recall": 1.0, "id_f1": 1.0}
