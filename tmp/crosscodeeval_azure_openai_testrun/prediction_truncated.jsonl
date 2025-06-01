@@ -1,0 +1,2 @@
+{"task_id": "project_cc_typescript/25", "pred": "    const debugConsole = apiDebug({", "target": "    await saveRequestMock(init, options, text, response);", "pred_ids": ["debugConsole", "apiDebug"], "target_ids": ["await", "saveRequestMock", "init", "options", "text", "response"]}
+{"task_id": "project_cc_typescript/115", "pred": "      ]).toBe('function')\n    }", "target": " as Lowercase<HTTPMethod>],\n      ).toBe('function')\n    }", "pred_ids": ["toBe"], "target_ids": ["as", "Lowercase", "HTTPMethod", "toBe"]}
