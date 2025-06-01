@@ -14,8 +14,12 @@ import numpy as np
 import openai
 import tiktoken
 from openai import OpenAI
+from openai import AzureOpenAI
 from openai.types.chat import ChatCompletion
 from tqdm import tqdm
+
+from dotenv import load_dotenv
+load_dotenv()
 
 SLEEP_SECOND = 2.8  # minimum time to sleep with API errors
 MAX_SLEEP_SECOND = 120  # maximum time sleep time to wait with exp backoff
@@ -23,9 +27,14 @@ BUFFER = 100  # estimated tokens used by OpenAI + some more buffer
 SYS_PROMPT = 'You are Codex, a code completion language model. Continue the code presented to you.'
 
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-assert openai_api_key is not None, "Please set openai_api_key with your API key"
-client = OpenAI()
+azure_openai_api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+azure_openai_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+azure_openai_api_version = os.environ.get("AZURE_API_VERSION")
+deepseek_key = os.environ.get("DEEPSEEK_KEY")
+deepseek_url = os.environ.get("DEEPSEEK_URL")
+# assert openai_api_key is not None, "Please set openai_api_key with your API key"
 
+client = None
 
 def query(
         args,
@@ -43,6 +52,21 @@ def query(
     Returns:
     OpenAI Completion object, the response from the OpenAI Codex API
     """
+
+    global client
+    if args.target_platform == "azure_openai":
+        assert azure_openai_api_key is not None, "Please set azure_openai_api_key"
+        assert azure_openai_api_version is not None, "Please set azure_openai_api_version"
+        assert azure_openai_endpoint is not None, "Please set azure_openai_endpoint"
+        client = AzureOpenAI(
+            api_key=azure_openai_api_key,
+            api_version=azure_openai_api_version,
+            azure_endpoint=azure_openai_endpoint
+        )
+    elif args.target_platform == "deepseek":
+        assert deepseek_key is not None, "Please set deepseek_key"
+        assert deepseek_url is not None, "Please set deepseek_url"
+        client = OpenAI(api_key=deepseek_key, base_url=deepseek_url)
     return client.chat.completions.create(model=args.model,
                                           messages=[
                                               {"role": "system", "content": SYS_PROMPT},
@@ -180,7 +204,7 @@ def get_openai_responses(
 ) -> List[str]:
     """Get OpenAI responses to all samples in data, store in out_path,
     and return list of task ids that were skipped due to some errors"""
-    tokenizer = tiktoken.encoding_for_model(args.model)
+    tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
     skipped = []
     with open(out_path, 'w') as f:
         for d in tqdm(data):
@@ -194,7 +218,7 @@ def get_openai_responses(
 
             if response is not None:
                 d['pred_raw'] = response.choices[0].message.content  # key compatible with eval script
-                d['pred'] = '\n'.join(d['pred_raw'].split('\n')[1:]).strip('`') if d['pred_raw'].startswith('```') else d['pred_raw'] # newer chatgpt may ourput ```[lang_tag]``` at beginning 
+                d['pred'] = '\n'.join(d['pred_raw'].split('\n')[1:]).strip('`') if d['pred_raw'].startswith('```') else d['pred_raw'] # newer chatgpt may ourput ```[lang_tag]``` at beginning
                 # d['api_response'] = str(response)
                 d['prompt_used'] = prompt  # records the augmented prompt
                 d['task_id'] = d['metadata']['task_id']  # adding for compatibility with eval script
@@ -219,7 +243,7 @@ def main():
         choices=['csharp', 'python', 'java', 'typescript']
     )
     parser.add_argument(
-        '--data_root_dir', type=str, default='data/',
+        '--data_root_dir', type=str, default='/Users/shinn/Documents/personal/cceval/data/crosscodeeval_data',
         help='path to directory where data is organized in lang/task.jsonl format'
     )
     parser.add_argument(
@@ -244,6 +268,10 @@ def main():
     )
     parser.add_argument(
         '--generation_max_tokens', type=int, default=50,
+        help='maximum number of tokens to generate'
+    )
+    parser.add_argument(
+        '--target_platform', type=str, default="deepseek",
         help='maximum number of tokens to generate'
     )
     args = parser.parse_args()

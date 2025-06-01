@@ -1,0 +1,48 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: Current File with Arguments -- Azure OpenAI Inference",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "/Users/shinn/Documents/personal/cceval/scripts/openai_inference.py",
+      "console": "integratedTerminal",
+      "args": "--target_platform azure_openai --task line_completion_rg1_unixcoder_cosine_sim_test --language typescript --model gpt-35-turbo --output_dir ./tmp/crosscodeeval_azure_openai_testrun/ --use_crossfile_context"
+    },
+    {
+      "name": "Python Debugger: Current File with Arguments -- Azure OpenAI Eval",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "/Users/shinn/Documents/personal/cceval/scripts/eval.py",
+      "console": "integratedTerminal",
+      "args": "--prompt_file /Users/shinn/Documents/personal/cceval/data/crosscodeeval_data/typescript/line_completion_rg1_unixcoder_cosine_sim_test.jsonl --output_dir ./tmp/crosscodeeval_azure_openai_testrun/ --ts_lib ./build/typescript-lang-parser.so --language typescript --only_compute_metric"
+    },
+    {
+      "name": "Python Debugger: Current File with Arguments -- Deepseek Inference",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "/Users/shinn/Documents/personal/cceval/scripts/openai_inference.py",
+      "console": "integratedTerminal",
+      "args": "--target_platform deepseek --task line_completion_rg1_unixcoder_cosine_sim_test --language typescript --model deepseek-chat --output_dir ./tmp/crosscodeeval_deepseek_testrun/ --use_crossfile_context"
+    },
+    {
+      "name": "Python Debugger: Current File with Arguments -- Deepseek Eval",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "/Users/shinn/Documents/personal/cceval/scripts/eval.py",
+      "console": "integratedTerminal",
+      "args": "--prompt_file /Users/shinn/Documents/personal/cceval/data/crosscodeeval_data/typescript/line_completion_rg1_unixcoder_cosine_sim_test.jsonl --output_dir ./tmp/crosscodeeval_deepseek_testrun/ --ts_lib ./build/typescript-lang-parser.so --language typescript --only_compute_metric"
+    },
+    {
+      "name": "Python Debugger: Build Prompt",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "/Users/shinn/Documents/personal/cceval/prompt_builder/augment_with_cfc.py",
+      "console": "integratedTerminal",
+      "args": "--language typescript --rerank True --ranker sparse --ranking_fn bm25 --query_type last_n_lines --crossfile_distance 100 --maximum_chunk_to_rerank 1000 --maximum_cross_files 1000 --maximum_cross_file_chunk 5 --use_next_chunk_as_cfc True --skip_if_no_cfc False --output_file_suffix 'rg1'"
+    }
+  ]
+}
